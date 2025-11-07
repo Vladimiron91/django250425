@@ -7,5 +7,5 @@ def home_page(request: HttpRequest, user_name):
     # create Response
 
     return HttpResponse(
-        f"<h1>Hello from our first endpoint!!!!!  --  {user_name}</h1>"
+        f"<h1>Hello,  {user_name}</h1>"
     )
