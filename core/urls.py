@@ -22,5 +22,9 @@ from test_app.views import home_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # http://127.0.0.1:8000/admin/
+<<<<<<< HEAD
     path('<str:user_name>', home_page),  # http://127.0.0.1:8000
+=======
+    path('<str:user_name>/', home_page),  # http://127.0.0.1:8000
+>>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
 ]
