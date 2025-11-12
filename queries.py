@@ -4,10 +4,10 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
-from test_app.models import (
-    Book,
-    UserProfile
-)
+# from test_app.models import (
+#     Book,
+#     UserProfile
+# )
 
 
 # try:
@@ -103,7 +103,7 @@ from test_app.models import (
 
 # =====================================================================
 
-from django.db.models import Q
+# from django.db.models import Q
 
 # Q class
 
