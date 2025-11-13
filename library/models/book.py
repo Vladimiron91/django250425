@@ -16,6 +16,8 @@ class Book(models.Model):
         validators=[MaxValueValidator(10_000)],
         blank=True, null=True, verbose_name="Страницы"
     )
+    price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    discounted_price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
 
     publisher = models.ForeignKey("Publisher", on_delete=models.SET_NULL, null=True, related_name="books" )
 
