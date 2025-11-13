@@ -81,6 +81,19 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     published_date = models.DateField()
     pages = models.PositiveSmallIntegerField(default=0)
+    is_bestseller = models.BooleanField(default=False)
+    price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )  # 9999.99
+    discounted_price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )  # 9999.99
 
     def __str__(self):
         return f"Book '{self.title}'  -- Author '{self.author}'"
