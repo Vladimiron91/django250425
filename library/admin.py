@@ -3,7 +3,46 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from library.models import Book, User
+from library.models import Book, User, Author
+
+
+# class UserTabularInline(admin.TabularInline):
+#     model = User
+#     extra = 1  # Кол-во пустых форм для создания
+#     fields = ['username', 'email', 'first_name', 'last_name', 'gender']
+
+
+class BookInline(admin.StackedInline):
+    model = Book
+    extra = 1
+    fields = [
+        'title',
+        'publisher',
+        'category',
+    ]
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    inlines = [BookInline]
+
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = [
+        'title',
+        'publication_date',
+        'author',
+        'page_count',
+        'category',
+        'custom_field'
+    ]
+
+    @admin.display(description='кол-во библиотек')
+    def custom_field(self, obj: Book):
+        count = obj.libraries.count()
+
+        return count
 
 
 @admin.register(User)
@@ -25,6 +64,5 @@ class CustomUserAdmin(BaseUserAdmin):
     ordering = ('username',)  # порядок оторбажения данных (сортировка)
 
 
-admin.site.register(Book)
 admin.site.unregister(Group)
 admin.site.register(Group)

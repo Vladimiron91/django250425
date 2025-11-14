@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from environ import Env
 
+from sqlite_log_fact import TracedConnection
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,12 +25,12 @@ env.read_env(str(BASE_DIR / ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY")
+SECRET_KEY = 'django-insecure-_)z^j4h+((dil1#di)c6xw&_c)@7uy)ihuga%p&ql%!l(b0+ak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG")
+DEBUG = True
 
-ALLOWED_HOSTS = env.str("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
