@@ -9,6 +9,16 @@ from django.utils import timezone
 
 from django.db import models
 
+<<<<<<< HEAD
+class Book(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField()
+    author = models.CharField(max_length=100)
+    published_date = models.DateField()
+
+    def __str__(self):
+        return f"Book '{self.title}' -- Author '{self.author}'"
+=======
 
 class Role(StrEnum):  # Енам класс. Похоже как мы делали список с кортежами, только мощнее(можно создвать свои настройки, методы и прочее)
     lib_member = "Lib Member"
@@ -119,11 +129,17 @@ class Book(models.Model):
         # ]
 
 
+>>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
 
 class Post(models.Model):
     title = models.CharField(max_length=120)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+<<<<<<< HEAD
+    image_url = models.URLField(null=True, blank=True)
+
+class UserProfils(models.Model):
+=======
     image_url = models.URLField(max_length=250, null=True, blank=True)
 
     def __str__(self):
@@ -133,6 +149,7 @@ class Post(models.Model):
         db_table = "posts"  # Название таблицы
 
 class UserProfile(models.Model):
+>>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
     nickname = models.CharField(max_length=70, unique=True)
     bio = models.TextField(null=True, blank=True)
     website = models.URLField(max_length=250, blank=True, null=True)
@@ -140,6 +157,9 @@ class UserProfile(models.Model):
     followers_count = models.PositiveBigIntegerField()
     posts_count = models.PositiveIntegerField()
     comments_count = models.PositiveIntegerField()
+<<<<<<< HEAD
+    engagement_rate = models.FloatField() #5.27
+=======
     engagement_rate = models.FloatField()
 
     def __str__(self):
@@ -147,3 +167,4 @@ class UserProfile(models.Model):
 
     class Meta:
         db_table = "user_profile"  # Название таблицы
+>>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
