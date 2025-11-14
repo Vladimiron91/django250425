@@ -15,6 +15,8 @@ from environ import Env
 
 from sqlite_log_fact import TracedConnection
 
+from sqlite_log_fact import TracedConnection
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,24 +85,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if env.bool("REMOTE_DB"):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': env.str('MYSQL_NAME'),
-            'HOST': env.str('MYSQL_HOST'),
-            'PORT': env.int('MYSQL_PORT'),
-            'USER': env.str('MYSQL_USER'),
-            'PASSWORD': env.str('MYSQL_PASSWORD'),
-        },
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        },
-    }
+
 
 # DATABASES = {
 #     'default': {
