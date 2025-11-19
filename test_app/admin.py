@@ -3,11 +3,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-<<<<<<< HEAD
 from test_app.models import Book
 
 admin.site.register(Book)
-=======
 from test_app.models import Book, Post, UserProfile, User
 
 
@@ -68,4 +66,3 @@ admin.site.register(Book)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.unregister(Group)
 admin.site.register(Group)
->>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48

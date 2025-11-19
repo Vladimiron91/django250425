@@ -2,14 +2,13 @@ from enum import StrEnum
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
 
 from django.utils.translation.trans_null import gettext_lazy as _
 from django.utils import timezone
 
 from django.db import models
 
-<<<<<<< HEAD
 class Book(models.Model):
     title = models.CharField(max_length=120)
     description = models.TextField()
@@ -18,7 +17,6 @@ class Book(models.Model):
 
     def __str__(self):
         return f"Book '{self.title}' -- Author '{self.author}'"
-=======
 
 class Role(StrEnum):  # Енам класс. Похоже как мы делали список с кортежами, только мощнее(можно создвать свои настройки, методы и прочее)
     lib_member = "Lib Member"
@@ -129,17 +127,14 @@ class Book(models.Model):
         # ]
 
 
->>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
 
 class Post(models.Model):
     title = models.CharField(max_length=120)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-<<<<<<< HEAD
     image_url = models.URLField(null=True, blank=True)
 
 class UserProfils(models.Model):
-=======
     image_url = models.URLField(max_length=250, null=True, blank=True)
 
     def __str__(self):
@@ -149,7 +144,6 @@ class UserProfils(models.Model):
         db_table = "posts"  # Название таблицы
 
 class UserProfile(models.Model):
->>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
     nickname = models.CharField(max_length=70, unique=True)
     bio = models.TextField(null=True, blank=True)
     website = models.URLField(max_length=250, blank=True, null=True)
@@ -157,9 +151,7 @@ class UserProfile(models.Model):
     followers_count = models.PositiveBigIntegerField()
     posts_count = models.PositiveIntegerField()
     comments_count = models.PositiveIntegerField()
-<<<<<<< HEAD
     engagement_rate = models.FloatField() #5.27
-=======
     engagement_rate = models.FloatField()
 
     def __str__(self):
@@ -167,4 +159,82 @@ class UserProfile(models.Model):
 
     class Meta:
         db_table = "user_profile"  # Название таблицы
->>>>>>> 0e003c4962787e63c801a33bb7f977651a386d48
+
+
+
+'''Домашнее задание: Проект "Менеджер задач" — продолжение
+Цель:
+Добавить строковое представление (str) и метаданные (Meta) к моделям менеджера задач, а также настроить административную панель для удобного управления этими моделями.
+Реализуйте изменения в моделях:
+Модель Task:
+Добавить метод str, который возвращает название задачи.
+Добавить класс Meta с настройками:
+Имя таблицы в базе данных: 'task_manager_task'.
+Сортировка по убыванию даты создания.
+Человекочитаемое имя модели: 'Task'.
+Уникальность по полю 'title'.'''
+
+class Task(models.Model):
+    title = models.CharField(
+        max_length=255,
+        unique=True,
+        validators=[MinLengthValidator(10)])
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("New", "New"),
+            ("In_progress", "In Progress"),
+            ("Completed", "Completed"),
+            ("Closed", "Closed"),
+            ("Pending", "Pending"),
+            ("Blocked", "Blocked"),
+        ],
+        default="New"
+    )
+
+    priority = models.CharField(
+        max_length=20,
+        choices=[
+            ("Low", "Low"),
+            ("Medium", "Medium"),
+            ("High", "High"),
+            ("Very High", "Very High"),
+        ]
+    )
+
+    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+    due_date = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    tags = models.ManyToManyField("Tag", blank=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = "task_manager_task"
+        ordering = ["-created_at"]
+        verbose_name = "Task"
+        verbose_name_plural = "Tasks"
+        constraints = [
+            models.UniqueConstraint(fields=["title"], name="unique_task_title")
+        ]
+
+'''Модель SubTask:
+Добавить метод str, который возвращает название подзадачи.
+Добавить класс Meta с настройками:
+Имя таблицы в базе данных: 'task_manager_subtask'.
+Сортировка по убыванию даты создания.
+Человекочитаемое имя модели: 'SubTask'.
+Уникальность по полю 'title'.
+
+Модель Category:
+Добавить метод str, который возвращает название категории.
+Добавить класс Meta с настройками:
+Имя таблицы в базе данных: 'task_manager_category'.
+Человекочитаемое имя модели: 'Category'.
+Уникальность по полю 'name'.'''
