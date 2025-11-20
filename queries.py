@@ -1,6 +1,5 @@
 import os
 import django
-from sqlalchemy import Subquery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
@@ -208,7 +207,7 @@ from django.db.models import (
     Avg,
     Count,
     Min,
-    Max
+    Max, Subquery, OuterRef
 )
 from typing import Any
 
@@ -264,69 +263,88 @@ from typing import Any
 # for obj in books_by_category:
 #     print(f"Категории: {obj['name_category']}, кол-во книг = {obj['books_count']}")
 #
-
-### **Задача 2: Диапазон цен и общее количество страниц**
-# **ТЗ:** Найти минимальную, максимальную цену книг и общее количество страниц всех книг
-
-from library.models import Book, Category
-from django.db.models import (Min,Max,Sum)
-
-data = Book.objects.aggregate(min=Min('price'), max=Max('price'), total_pages=Sum('page_count'))
-
-print(data)
-
-### **Задача 8: Книги с количеством займов и статусом популярности**
-# **ТЗ:** Для каждой книги подсчитать количество займов и пометить как популярную (>3 займов) или обычную
-
-from library.models import Book, Borrow
-from django.db.models import (
-     Case,
-     When,
-     Count,
-     Value,
-     CharField,
-     Q
-)
-data = (
-    Book.objects
-    .annotate(
-        borrow_cnt=Count('borrows'),
-        populate_status=Case(
-            When(condition=Q(borrow_cnt__gt=6), then=Value('Popular')),
-            default=Value('Ordenary'),
-            output_field=CharField())
-    ).order_by('-borrow_cnt')
-)
-
-print(data)
-
-for d in data[:10]:
-    print(f"{d.title=} -- {d.populate_status=} -- {d.borrow_cnt=}")
-
-### **Задача 10: Книги дороже средней цены в своем жанре**
-# **ТЗ:** Найти книги, цена которых превышает среднюю цену книг в том же жанре
-
-### **Задача 10: Книги дороже средней цены в своем жанре**
-# **ТЗ:** Найти книги, цена которых превышает среднюю цену книг в том же жанре
-
-from library.models import Book
-from django.db.models import (Avg, Subquery, OuterRef, F)
-avg_price_subquery = Book.objects.filter(
-    category=OuterRef("category")
-).values('category').annotate(avg_price=Avg('price')).values('avg_price')
-
-data = (
-    Book.objects
-    .annotate(avg_price_genre=Subquery(avg_price_subquery))
-    .filter(price__gt=F('avg_price_genre'))
-)
+# from library.models import Borrow
+# from django.db.models import (Count, Q)
+#
+# data = Borrow.objects.values('member__username').annotate(
+#     count_aktiv_borrow=Count('id', filter=Q(returned=False))
+# ).order_by('-count_aktiv_borrow')[:5]  # 0 -4 index
+#
+#
 # print(data)
 
-for d in data:
-    print (f"{d.title} -- {d.category} : ")
-    print(f"{d.price} -- {d.avg_price_genre}")
+
+from library.models import Borrow, User
+from django.db.models import (Count, Q)
+
+
+# 2 var
+# data = (
+#     Borrow.objects
+#     .filter(returned=False)
+#     .values('member__username')
+#     .annotate(borrows_cnt=Count('id'))
+#     .order_by('-borrows_cnt')
+# )[:5]
+#
+#
+# for item in data:
+#     print(item)
+#
+#
+# 3 var
+#
+# data = (
+#     User.objects
+#     .values('last_name', 'first_name')
+#     .annotate(
+#         borrows_count=Count(
+#             'borrows',
+#             filter=Q(borrows__returned=False)
+#         )
+#     )
+#     .order_by('-borrows_count')
+# )[:5]
+
+
+# ПОЛУЧИТЬ список книг цена которых выше срадней у того же автора
+
+from django.db.models import F
+
+subquery = (
+    Book.objects
+    .filter(author=OuterRef('author'))
+    .values('author')
+    .annotate(avg_price=Avg('price'))
+    .values('avg_price')
+)
+
+
+general_query = (
+    Book.objects
+    .annotate(avg_price_by_author=Subquery(subquery))
+    .filter(
+        price__gt=F('avg_price_by_author')
+    )
+)
+
+"""
+SELECT t1.*, (
+        SELECT Avg(t2.price) as avg_price
+        FROM books AS t2
+        WHERE t2.author_id = t1.author_id
+    ) AS avg_price_by_author
+FROM books as t1
+WHERE 
+    author_id = 1 AND
+    t1.price > avg_price_by_author
+;
+"""
+
 
 from rest_framework import serializers
+from library.models import Category
+
 
 class UserCustomSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=25)
@@ -334,12 +352,32 @@ class UserCustomSerializer(serializers.Serializer):
     is_active = serializers.BooleanField()
     created_at = serializers.DateTimeField()
 
+
 class CategorySerializer(serializers.ModelSerializer):
+    # name_categoy = ...
+
     class Meta:
         model = Category
         fields = "__all__"
+        # fields = ["id", "category_name"]
 
-data = {"name": "Johny",
-        "age": 9,
-        "is_active": True,
-        "created_at": "2022-09-17T"}
+
+raw_data = {
+    "name": "Johnny",
+    "age": 18,
+    "is_active": True,
+    "created_at": "2022-09-17T16:31:15",
+}
+
+
+data = UserCustomSerializer(data=raw_data)
+
+print(data)
+
+
+if data.is_valid():
+    print(data.validated_data)
+
+else:
+    print("ДАННЫЕ НЕВАЛИДНЫ")
+    print(data.errors)

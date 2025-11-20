@@ -230,11 +230,60 @@ class Task(models.Model):
 Имя таблицы в базе данных: 'task_manager_subtask'.
 Сортировка по убыванию даты создания.
 Человекочитаемое имя модели: 'SubTask'.
-Уникальность по полю 'title'.
+Уникальность по полю 'title'.'''
 
-Модель Category:
+class SubTask(models.Model):
+    title = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("New", "New"),
+            ("In_progress", "In Progress"),
+            ("Completed", "Completed"),
+            ("Closed", "Closed"),
+            ("Pending", "Pending"),
+            ("Blocked", "Blocked"),
+        ],
+        default="New"
+    )
+
+    deadline = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = "task_manager_subtask"
+        ordering = ["-created_at"]
+        verbose_name = "SubTask"
+        verbose_name_plural = "SubTasks"
+        constraints = [
+            models.UniqueConstraint(fields=["title"], name="unique_subtask_title")
+        ]
+
+'''Модель Category:
 Добавить метод str, который возвращает название категории.
 Добавить класс Meta с настройками:
 Имя таблицы в базе данных: 'task_manager_category'.
 Человекочитаемое имя модели: 'Category'.
 Уникальность по полю 'name'.'''
+
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = "task_manager_category"
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        constraints = [
+            models.UniqueConstraint(fields=["name"], name="unique_category_name")
+        ]
