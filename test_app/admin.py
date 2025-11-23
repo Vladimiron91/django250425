@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from test_app.models import Book, Post, UserProfile, User
+from test_app.models import Book, Post, UserProfile, User, Task, SubTask, Category
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -58,6 +58,32 @@ class CustomUserAdmin(BaseUserAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'email')  # список полей на поиск
     ordering = ('username',)  # порядок оторбажения данных (сортировка)
 
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = (
+        "title", "project", "status", "priority",
+        "created_at", "due_date"
+    )
+    list_filter = ("status", "priority", "project", "created_at")
+    search_fields = ("title", "description")
+    ordering = ("-created_at",)
+    list_per_page = 20
+
+
+@admin.register(SubTask)
+class SubTaskAdmin(admin.ModelAdmin):
+    list_display = ("title", "task", "status", "created_at")
+    list_filter = ("status", "task")
+    search_fields = ("title",)
+    ordering = ("-created_at",)
+    list_per_page = 20
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
+    ordering = ("name",)
 
 admin.site.register(Book)
 admin.site.register(UserProfile, UserProfileAdmin)
